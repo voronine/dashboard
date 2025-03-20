@@ -1,0 +1,59 @@
+@import '../styles/main.scss';
+
+.dashboard-container {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: $padding;
+}
+
+.user-details {
+  position: relative;
+  background: #fafafa;
+  padding: $padding;
+  border-radius: 4px;
+  margin-bottom: $padding;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .user-info-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .user-avatar {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    margin-right: $padding;
+    object-fit: cover;
+
+    @include respond-to(small) {
+      width: 80px;
+      height: 80px;
+      margin-right: 8px;
+    }
+  }
+
+  .user-info {
+    p {
+      margin: 0 0 8px;
+      color: #555;
+      font-size: 16px;
+
+      @include respond-to(small) {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .logout-btn {
+    position: absolute;
+    top: $padding;
+    right: $padding;
+    font-size: 12px;
+    padding: 4px 8px; 
+  }
+}
