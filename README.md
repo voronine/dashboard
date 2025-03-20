@@ -1,54 +1,66 @@
-# React + TypeScript + Vite
+# User Dashboard с авторизацией
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Это тестовый проект, реализующий приложение «User Dashboard с авторизацией». Приложение построено на React и использует Redux Toolkit для управления состоянием, а также Ant Design для построения UI. Стили оформлены с помощью SASS.
 
-Currently, two official plugins are available:
+## Цель задания
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Создать React-приложение, которое реализует следующие функции:
 
-## Expanding the ESLint configuration
+1. **Форма входа (Login):**
+   - Аутентификация пользователя через API [dummyjson.com/docs/users](https://dummyjson.com/docs/users) с использованием библиотеки Axios.
+   - Аутентификация выполняется через endpoint:  
+     `POST https://dummyjson.com/auth/login`
+   - При успешном логине данные залогиненного пользователя сохраняются в Redux store и выполняется редирект на страницу Dashboard.
+   - В форме реализована опция **«Запомнить меня»**. Если пользователь её выбирает, JWT-токен сохраняется в `localStorage`, что позволяет сохранять сессию при перезагрузке страницы.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. **Dashboard:**
+   - Отображение подробных данных залогиненного пользователя.
+   - Получение списка всех пользователей через endpoint:  
+     `GET https://dummyjson.com/users`  
+     и отображение их в таблице с полями: Имя (`firstName`), Фамилия (`lastName`) и Возраст (`age`).
+   - В блоке с информацией о пользователе отображается аватар (слева) и текстовая информация (справа). В правом верхнем углу добавлена кнопка **Logout**, которая удаляет данные пользователя из `localStorage` и диспатчит экшен `logout`, разлогинивая приложение.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+3. **Управление состоянием и архитектура:**
+   - Глобальное состояние приложения организовано с помощью Redux Toolkit.
+   - В Redux store хранятся данные залогиненного пользователя и список пользователей.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. **Кастомные хуки и функциональность авторизации:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   - **useAuth:**  
+     Хук для работы с аутентификацией. При отправке формы логина отправляется запрос на endpoint `https://dummyjson.com/auth/login` с использованием Axios. Если аутентификация проходит успешно, данные залогиненного пользователя сохраняются в Redux store, а если пользователь выбрал опцию «Запомнить меня», JWT-токен вместе с данными пользователя сохраняется в `localStorage`.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+   - **useFetchUsers:**  
+     Хук для получения списка пользователей с REST API. Он отправляет GET-запрос на endpoint `https://dummyjson.com/users` и обновляет Redux store или локальное состояние, чтобы отобразить полученные данные в таблице на Dashboard.
+
+   - **useRestoreSession:**  
+     Этот хук отвечает за восстановление сессии при загрузке приложения. Он проверяет наличие сохранённых данных пользователя в `localStorage`. Если данные найдены, диспатчится экшен `loginSuccess` для обновления Redux store, а если данные отсутствуют – вызывается `logout()`, что гарантирует разлогинивание пользователя. Хук возвращает булевый флаг, сигнализирующий об окончании инициализации, что помогает избежать мерцания страницы при восстановлении сессии.
+
+5. **UI и стилизация:**
+   - Используются компоненты Ant Design:  
+     - **Login:** `Form`, `Input`, `Button`, `Checkbox`.
+     - **Dashboard:** `Table`, `Layout` (с использованием Sider, Header, Content), а также дополнительные компоненты для создания структурированной навигации.
+   - Стили оформлены с использованием SASS с применением переменных, вложенности и миксинов. Проект включает глобальные стили в файле `main.scss`, а также отдельные SCSS-файлы для Dashboard и Login.
+   - Приложение адаптивно – корректно отображается на мобильных устройствах, планшетах и десктопах (используются медиазапросы и Grid-система Ant Design).
+
+## Демонстрация
+
+Пример страницы Dashboard с подробной информацией о залогиненном пользователе и таблицей всех пользователей, доступный по адресу:  
+[https://voronine.github.io/dashboard](https://voronine.github.io/dashboard)
+
+## Технологии
+
+- **React 19**
+- **Redux Toolkit**
+- **React Router DOM 7**
+- **Ant Design v5**
+- **Axios**
+- **Vite**
+- **SASS**
+
+## Установка и запуск
+
+1. **Клонируйте репозиторий:**
+
+   ```bash
+   git clone https://github.com/voronine/dashboard.git
+   cd dashboard
